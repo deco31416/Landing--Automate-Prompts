@@ -1,0 +1,69 @@
+---
+title: "Prompts"
+publishedAt: "2020-07-12"
+updatedAt: "2024-06-15"
+summary: "Prompts define how a large language model behaves."
+---
+
+A Prompt on TrainKore encapsulates the instructions and other configuration for how a large language model should perform a specific task. Each change in any of the following properties creates a new version of the Prompt:
+
+- the template such as Write a song about `{{topic}}`
+- the model e.g. gpt-4o
+- all the parameters to the model such as temperature, max_tokens, top_p etc.
+- any tools available to the model
+
+A Prompt is callable in that if you supply the necessary inputs, it will return a response from the model.
+
+Inputs are defined in the template through the double-curly bracket syntax e.g. `{{topic}}` and the value of the variable will need to be supplied when you call the Prompt to create a generation.
+
+This separation of concerns, keeping configuration separate from the query time data, is crucial for enabling you to experiment with different configurations and evaluate any changes. The Prompt stores the configuration and the query time data are stored in [Logs](https://app.trainkore.com/settings), which can then be re-used in Datasets.
+
+<div className="mb-6">
+  <Banner title="FYI: Prompts have recently been renamed from ‘Projects’.">
+    The Project’s “Model Configs” are now just each version of a Prompt. Some of
+    the documentation and APIs may still refer to Projects and Model Configs.
+  </Banner>
+</div>
+
+<Banner title="Note that we use a capitalized 'Prompt' to refer to the entity in TrainKore.">
+  A lowercase 'prompt' refers to the general concept of input to the model.
+</Banner>
+
+```bash
+model: gpt-4
+temperature: 1.0
+max_tokens: -1
+provider: openai
+endpoint: chat
+---
+<system>
+  Write a song about {{topic}}
+</system>
+```
+
+## Versioning
+
+A Prompt file will have multiple versions as you try out different models, params or templates, but they should all be doing the same task, and in general should be swappable with one-another.
+
+By versioning your Prompts, you can track how adjustments to the template or parameters influence the LLM’s responses. This is crucial for iterative development, as you can pinpoint which versions produce the most relevant or accurate outputs for your specific use case.
+
+## When to create a new Prompt
+
+You should create a new Prompt for every different ‘task to be done’ with the LLM. For example each of these tasks are things that can be done by an LLM and should be a separate Prompt File: extractive summary, title creator, outline generator etc.
+
+We’ve seen people find it useful to also create a Prompt called ‘Playground’ where they can free form experiment without concern of breaking anything or making a mess of their other Prompts.
+
+## Using Prompts
+
+Prompts are callable as an API. You supply and query-time data such as input values or user messages, and the model will respond with its text output.
+
+### TypeScript
+
+```bash
+const chatResponse = await humanloop.chatDeployed({
+  project: "song writer",
+  inputs: {
+    topic: "debugging compiler errors",
+  },
+});
+```
